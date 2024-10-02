@@ -33,6 +33,6 @@ Api key goes here
 change Axios url ip address to your machines ip adress
 
 http://192.168.124.21:3001/insertSearchTerm
-inser your local machine api address here
+insert your local machine api address here
 
 Now run node ServerRout.js to run the backend server
