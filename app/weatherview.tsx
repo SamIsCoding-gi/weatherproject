@@ -49,7 +49,7 @@ const WeatherView = ({
   const temp = currentWeather.data[0].temp;
   const tempColor = getTemperatureColor(temp);
   return (
-    <div className=" border-2 border-transparent flex-1 items-center justify-center bg-white p-4 md:p-8 lg:p-12 backdrop-blur-3xl rounded-[10px] bg-opacity-[50%] ">
+    <div className=" drop-shadow-2xl border-2 border-transparent flex-1 items-center justify-center bg-white p-4 md:p-8 lg:p-12 backdrop-blur-3xl rounded-[10px] bg-opacity-[50%] ">
       <div className=" flex flex-row justify-between items-center ">
         <span className=" text-[12px] sm:text-[15px] md:text-[20px] text-[#525252] font-bold">
           {currentWeather.data[0].city_name}

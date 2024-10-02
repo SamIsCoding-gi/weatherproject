@@ -4,7 +4,7 @@ import { MongoClient, ServerApiVersion } from 'mongodb';
 const app = express();
 app.use(express.json());
 
-const uri = "mongodb+srv://<Put UserName Here>:<Put Password Here>@<Put ClusterName Here>.bgjwczk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://<USERNAME GOES HERE>:<MONGODB DATABASE PASSWORD>.bgjwczk.mongodb.net/?retryWrites=true&w=majority&appName=<CLUSTERNAME GOES HERE>";
 
 
 // Use the cors middleware
@@ -53,7 +53,7 @@ app.put("/insertSearchTerm", async (req, res) => {
 
     // get daily and 16 day forecast
     const dailyForecast = await fetch(
-      `http://api.weatherbit.io/v2.0/current?city=${searchTerm}&key=<Put API Key Here>`);
+      `http://api.weatherbit.io/v2.0/current?city=${searchTerm}&key=<API KEY GOES HERE>`);
       if (!dailyForecast.ok) {
         throw new Error("City not found");
       }
@@ -61,7 +61,7 @@ app.put("/insertSearchTerm", async (req, res) => {
       console.log("Daily weather: ",dailyForecastData);
 
       const sixteenDayForecast = await fetch(
-        `https://api.weatherbit.io/v2.0/forecast/daily?city=${searchTerm}&days=16&key=<Put API Key Here>`);  
+        `https://api.weatherbit.io/v2.0/forecast/daily?city=${searchTerm}&days=16&key=<API KEY GOES HERE>`);  
       if (!sixteenDayForecast.ok) {
         throw new Error("City not found");
       }

@@ -1,19 +1,34 @@
 "use client";
 import Image from "next/image";
 import WeatherView from "./weatherview";
-import { useState, CSSProperties, ChangeEvent, FormEvent } from "react";
+import {
+  useState,
+  CSSProperties,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+} from "react";
 import axios from "axios";
 import PulseLoader from "react-spinners/PulseLoader";
 
 export default function Home() {
   const [locationValue, setLocationValue] = useState("");
-  const [cities, setCities] = useState<string[]>([]);
+  const [oldCitySearch, setOldCitySearch] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [location, setLocation] = useState<string>("");
   const [currentWeather, setCurrentWeather] = useState();
+
+  // Load saved searches from localStorage when the component mounts
+  useEffect(() => {
+    const savedCities = localStorage.getItem("savedCities");
+    console.log("Saved cities: ", savedCities);
+    if (savedCities) {
+      setOldCitySearch(JSON.parse(savedCities));
+    }
+  }, []);
 
   const handleTextChange = (text: string) => {
     setLocationValue(text);
@@ -40,10 +55,24 @@ export default function Home() {
     timezone: string;
   }
 
+  // searches old search when clicked
+  const pastSearchClicked = (e: any, city: string) => {
+    console.log("City: ", city);
+    setLocationValue(city);
+    handleSearch(city);
+  };
+
+  // deletes old search when clicked
+  const deleteOldSearch = (city: string) => {
+    const updatedCities = oldCitySearch.filter((c) => c !== city);
+    setOldCitySearch(updatedCities);
+    localStorage.setItem("savedCities", JSON.stringify(updatedCities));
+    console.log("Cities Remaining: ", updatedCities);
+  };
+
   // fetches weather prediction
-  const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSearch = async () => {
     console.log("Searching");
-    e.preventDefault();
     const trimmedLocation = locationValue.trim();
     if (trimmedLocation === "") {
       setError("Please enter a valid location.");
@@ -58,12 +87,22 @@ export default function Home() {
     try {
       const searchTermResponse = await axios.put(
         `http://192.168.124.21:3001/insertSearchTerm`,
-        { searchTerm: trimmedLocation } // Send the search term in the request body
+        { searchTerm: trimmedLocation }
       );
       if (!searchTermResponse) {
         // Check if the response is ok
         throw new Error("City not found");
       }
+      // Check if the search term already exists in the cities array
+      if (!oldCitySearch.includes(trimmedLocation)) {
+        let updatedCities = [trimmedLocation, ...oldCitySearch];
+        if (updatedCities.length > 5) {
+          updatedCities = updatedCities.slice(0, 5);
+        }
+        setOldCitySearch(updatedCities);
+        localStorage.setItem("savedCities", JSON.stringify(updatedCities));
+      }
+
       console.log("Search term response: ", searchTermResponse.data);
       setCurrentWeather(searchTermResponse.data.dailyForecastData);
       setWeather(searchTermResponse.data.sixteenDayForecastData);
@@ -94,7 +133,12 @@ export default function Home() {
           height={35}
           alt="search icon"
         />
-        <form onSubmit={handleSearch}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearch();
+          }}
+        >
           <input
             color="black"
             type="text"
@@ -102,9 +146,7 @@ export default function Home() {
             placeholder="Enter A Location!"
             value={locationValue}
             onChange={(e) => handleTextChange(e.target.value)}
-            onSubmit={(e) => handleSearch(e)}
-            // onKeyDown={(e) => handleSearch(e)}
-            className="bg-opacity-[20%] bg-[#212121] border-[2px] border-gray-500 focus:border-black outline-none py-[10px] px-[100px] w-[100%] rounded-[5px] text-black text-[18px] text-left"
+            className=" drop-shadow-2xl bg-opacity-[20%] bg-[#212121] border-[2px] border-gray-500 focus:border-black outline-none py-[10px] px-[100px] w-[100%] rounded-[5px] text-black text-[18px] text-left"
           />
         </form>
       </div>
@@ -113,6 +155,26 @@ export default function Home() {
           {error}
         </p>
       </div>
+      {/* Old search suggestions */}
+      <div className="flex flex-row items-center justify-center gap-4">
+        {oldCitySearch.map((city) => (
+          <div className="flex justify-between items-center bg-opacity-50 bg-white rounded-[10px] p-2 w-full max-w-[150px]">
+            <p
+              className="text-black text-center cursor-pointer text-[12px] md:text-[18px] sm:text-[16px] flex-1"
+              onClick={() => pastSearchClicked(null, city)}
+            >
+              {city}
+            </p>
+            <p
+              className="text-[#FF0000] text-center cursor-pointer text-[20px] ml-4"
+              onClick={() => deleteOldSearch(city)}
+            >
+              X
+            </p>
+          </div>
+        ))}
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center items-center h-screen">
           <PulseLoader color={"white"} loading={isLoading} size={30} />
@@ -120,7 +182,7 @@ export default function Home() {
       ) : (
         currentWeather &&
         weather && (
-          <div className=" mt-[50px] mx-[10px]  md:mx-[100px] sm:mx-[100px] mb-[100px]">
+          <div className=" mt-[50px] mx-[10px]  md:mx-[20px] sm:mx-[20px] mb-[100px]">
             <WeatherView weather={weather} currentWeather={currentWeather} />
           </div>
         )
