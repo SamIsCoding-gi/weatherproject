@@ -182,7 +182,7 @@ export default function Home() {
       ) : (
         currentWeather &&
         weather && (
-          <div className=" mt-[50px] mx-[10px]  md:mx-[20px] sm:mx-[20px] mb-[100px]">
+          <div className=" mt-[50px] mx-[10px]  md:mx-[60px] lg:mx-[170px] sm:mx-[20px] mb-[100px]">
             <WeatherView weather={weather} currentWeather={currentWeather} />
           </div>
         )

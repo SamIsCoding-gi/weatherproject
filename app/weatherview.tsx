@@ -140,8 +140,8 @@ const WeatherView = ({
             <hr className="border-[#7f7f7f] border-[1px] w-full mt-[20px] mb-[20px]" />
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4 mt-4">
+          <div className="overflow-x-auto ">
+            <div className=" grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4 mt-4">
               {weather.data.map((day, index) => (
                 <div
                   key={index}
@@ -151,7 +151,7 @@ const WeatherView = ({
                       : ""
                   }`}
                 >
-                  <p className=" text-center sm:text-lg md:text-lg text-[15px] font-black text-[#292929]">
+                  <p className=" items-center text-center sm:text-lg md:text-lg text-[15px] font-black text-[#292929]">
                     {new Date(day.valid_date).toLocaleDateString("en-US", {
                       weekday: "short",
                     })}
@@ -160,7 +160,7 @@ const WeatherView = ({
                   <p className=" text-center sm:text-xl md:text-xl text-[20px] font-black text-[#3e3e3e] ">
                     {day.temp}°
                   </p>
-                  <div className=" flex flex-col">
+                  <div className=" flex flex-col items-center justify-center text-center">
                     <p className=" text-center sm:text-[15px] md:text-[15px] text-[10px] text-[#525252] ">
                       H {day.high_temp}°
                     </p>
